@@ -4,5 +4,5 @@ module com.andresramos.chessgamepracticejava {
 
 
     opens com.andresramos.chessgamepracticejava to javafx.fxml;
-    // exports com.andresramos.chessgamepracticejava;
+    exports com.andresramos.chessgamepracticejava;
 }
