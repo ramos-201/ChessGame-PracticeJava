@@ -42,6 +42,21 @@ public class ChessBoardView extends GridPane {
         }
     }
 
+    private Rectangle getRectangleForChessBoard(int row, int column) {
+        Rectangle rectangle = new Rectangle(SIZE_RECTANGLE, SIZE_RECTANGLE);
+        Color colorForRectangle = getColorForRectangle(row, column);
+        rectangle.setFill(colorForRectangle);
+        return rectangle;
+    }
+
+    private Color getColorForRectangle(int row, int column) {
+        ColorRectangle colorRectangle = chessGameManagerController.getColorRectangle(row, column);
+        return switch (colorRectangle) {
+            case BLACK -> Color.BEIGE;
+            case WHITE -> Color.SADDLEBROWN;
+        };
+    }
+
     private StackPane placePieceInRectangle(int row, int column) {
         Piece piece = chessGameManagerController.getPieceRectangle(row, column);
         ColorPiece colorPiece = piece.getColor();
@@ -67,21 +82,6 @@ public class ChessBoardView extends GridPane {
             case BISHOP -> "BISHOP";
             case KING -> "KING";
             case PAWN -> "PAWN";
-        };
-    }
-
-    private Rectangle getRectangleForChessBoard(int row, int column) {
-        Rectangle rectangle = new Rectangle(SIZE_RECTANGLE, SIZE_RECTANGLE);
-        Color colorForRectangle = getColorForRectangle(row, column);
-        rectangle.setFill(colorForRectangle);
-        return rectangle;
-    }
-
-    private Color getColorForRectangle(int row, int column) {
-        ColorRectangle colorRectangle = chessGameManagerController.getColorRectangle(row, column);
-        return switch (colorRectangle) {
-            case BLACK -> Color.BEIGE;
-            case WHITE -> Color.SADDLEBROWN;
         };
     }
 }
