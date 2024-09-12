@@ -9,9 +9,11 @@ import com.andresramos.chessgamepracticejava.utils.enums.PieceType;
 public class ChessGameManagerController {
 
     private final ChessBoard chessBoard;
+    private ColorPiece currentGameColorPiece;
 
     public ChessGameManagerController() {
         this.chessBoard = new ChessBoard();
+        this.currentGameColorPiece = ColorPiece.WHITE;
         placeChessPieces();
     }
 
@@ -65,5 +67,9 @@ public class ChessGameManagerController {
 
     public Piece getPieceRectangle(int row, int column) {
         return chessBoard.getPieceRectangle(row, column);
+    }
+
+    public ColorPiece getCurrentGameColorPiece() {
+        return currentGameColorPiece;
     }
 }

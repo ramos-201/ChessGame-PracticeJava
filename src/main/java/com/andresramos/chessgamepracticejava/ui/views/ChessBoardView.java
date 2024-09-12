@@ -18,7 +18,8 @@ public class ChessBoardView extends GridPane {
     private static final int SIZE_RECTANGLE = 75;
     private static final int PIECE_RADIUS = 30;
     private final ChessGameManagerController chessGameManagerController;
-
+    private Rectangle selectedRectangle;
+    
     public ChessBoardView(ChessGameManagerController chessGameController) {
         this.chessGameManagerController = chessGameController;
         createChessBoard();
@@ -35,7 +36,7 @@ public class ChessBoardView extends GridPane {
 
                 Boolean hasPiece = chessGameManagerController.hasPieceRectangle(row, column);
                 if (Boolean.TRUE.equals(hasPiece)) {
-                    StackPane pieceInRect = placePieceInRectangle(row, column);
+                    StackPane pieceInRect = placePieceInRectangle(row, column, rectangle);
                     add(pieceInRect, column, row);
                 }
             }
@@ -57,11 +58,27 @@ public class ChessBoardView extends GridPane {
         };
     }
 
-    private StackPane placePieceInRectangle(int row, int column) {
+    private StackPane placePieceInRectangle(int row, int column, Rectangle rectangle) {
         Piece piece = chessGameManagerController.getPieceRectangle(row, column);
         ColorPiece colorPiece = piece.getColor();
         PieceType pieceType = piece.getPieceType();
-        return getStackPaneForPieceCreated(colorPiece, pieceType);
+        StackPane stackPanePiece = getStackPaneForPieceCreated(colorPiece, pieceType);
+        ColorPiece currentGameColor = chessGameManagerController.getCurrentGameColorPiece();
+        if (currentGameColor == colorPiece) {
+            stackPanePiece.setOnMouseClicked(event -> ClickOnThePieceToMove(rectangle));
+        }
+        return stackPanePiece;
+    }
+
+    private void ClickOnThePieceToMove(Rectangle rectangle) {
+        if (selectedRectangle!= null) {
+            selectedRectangle.setFill(getColorForRectangle(
+                    GridPane.getRowIndex(selectedRectangle),
+                    GridPane.getColumnIndex(selectedRectangle)
+            ));
+        }
+        selectedRectangle = rectangle;
+        rectangle.setFill(Color.GREEN);
     }
 
     private StackPane getStackPaneForPieceCreated(ColorPiece colorPiece, PieceType pieceType) {
