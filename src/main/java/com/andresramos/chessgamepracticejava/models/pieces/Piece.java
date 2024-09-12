@@ -12,4 +12,12 @@ public class Piece {
         this.colorPiece = colorPiece;
         this.pieceType = pieceType;
     }
+
+    public ColorPiece getColor() {
+        return colorPiece;
+    }
+
+    public PieceType getPieceType() {
+        return pieceType;
+    }
 }

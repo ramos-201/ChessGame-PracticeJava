@@ -58,4 +58,12 @@ public class ChessGameManagerController {
     public ColorRectangle getColorRectangle(int row, int column) {
         return chessBoard.getColor(row, column);
     }
+
+    public Boolean hasPieceRectangle(int row, int column) {
+        return chessBoard.hasPieceRectangle(row, column);
+    }
+
+    public Piece getPieceRectangle(int row, int column) {
+        return chessBoard.getPieceRectangle(row, column);
+    }
 }

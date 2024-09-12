@@ -8,9 +8,9 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-    private final  static int WINDOW_WIDTH = 600;
-    private final static int WINDOW_HEIGHT = 600;
-    private final static String WINDOW_TITLE = "Chess Game - Practice";
+    private static final int WINDOW_WIDTH = 600;
+    private static final int WINDOW_HEIGHT = 600;
+    private static final String WINDOW_TITLE = "Chess Game - Practice";
 
     @Override
     public void start(Stage primaryStage) {

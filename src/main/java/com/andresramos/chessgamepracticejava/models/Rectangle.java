@@ -19,4 +19,12 @@ public class Rectangle {
     public void setPiece(Piece initializePiece) {
         this.piece = initializePiece;
     }
+
+    public Boolean hasPiece() {
+        return piece != null;
+    }
+
+    public Piece getPiece() {
+        return piece;
+    }
 }

@@ -38,4 +38,12 @@ public class ChessBoard {
     public void setPieceRectangle(Piece initializePiece, int row, int column) {
         rectangles[row][column].setPiece(initializePiece);
     }
+
+    public Boolean hasPieceRectangle(int row, int column) {
+        return rectangles[row][column].hasPiece();
+    }
+
+    public Piece getPieceRectangle(int row, int column) {
+        return rectangles[row][column].getPiece();
+    }
 }
