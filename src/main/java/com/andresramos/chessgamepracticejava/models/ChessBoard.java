@@ -1,5 +1,6 @@
 package com.andresramos.chessgamepracticejava.models;
 
+import com.andresramos.chessgamepracticejava.models.pieces.Piece;
 import com.andresramos.chessgamepracticejava.utils.enums.ColorRectangle;
 
 public class ChessBoard {
@@ -32,5 +33,9 @@ public class ChessBoard {
 
     public int sizeColumn() {
         return SIZE_COLUMN;
+    }
+
+    public void setPieceRectangle(Piece initializePiece, int row, int column) {
+        rectangles[row][column].setPiece(initializePiece);
     }
 }
