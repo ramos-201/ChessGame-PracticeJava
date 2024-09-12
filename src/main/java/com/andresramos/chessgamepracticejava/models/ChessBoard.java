@@ -36,6 +36,7 @@ public class ChessBoard {
     }
 
     public void setPieceRectangle(Piece initializePiece, int row, int column) {
+        System.out.println("row " + row + " column " + column + " P" + initializePiece.getPieceType());
         rectangles[row][column].setPiece(initializePiece);
     }
 
@@ -45,5 +46,9 @@ public class ChessBoard {
 
     public Piece getPieceRectangle(int row, int column) {
         return rectangles[row][column].getPiece();
+    }
+
+    public void removePiece(int startRectangleRow, int startRectangleColumn) {
+        rectangles[startRectangleRow][startRectangleColumn].setPiece(null);
     }
 }

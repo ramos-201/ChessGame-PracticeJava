@@ -72,4 +72,13 @@ public class ChessGameManagerController {
     public ColorPiece getCurrentGameColorPiece() {
         return currentGameColorPiece;
     }
+
+    public void movePiece(Piece piece, int nextRectangleRow, int nextRectangleColumn, int startRectangleRow, int startRectangleColumn) {
+        chessBoard.setPieceRectangle(piece, nextRectangleRow, nextRectangleColumn);
+        chessBoard.removePiece(startRectangleRow, startRectangleColumn);
+    }
+
+    public void changeCurrentGameColorPiece() {
+        currentGameColorPiece = currentGameColorPiece == ColorPiece.WHITE ? ColorPiece.BLACK : ColorPiece.WHITE;
+    }
 }

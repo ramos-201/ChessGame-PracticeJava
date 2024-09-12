@@ -16,8 +16,8 @@ public class Rectangle {
         return colorRectangle;
     }
 
-    public void setPiece(Piece initializePiece) {
-        this.piece = initializePiece;
+    public void setPiece(Piece pieceValue) {
+        this.piece = pieceValue;
     }
 
     public Boolean hasPiece() {

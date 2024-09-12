@@ -6,6 +6,7 @@ import com.andresramos.chessgamepracticejava.utils.enums.ColorPiece;
 import com.andresramos.chessgamepracticejava.utils.enums.ColorRectangle;
 import com.andresramos.chessgamepracticejava.utils.enums.PieceType;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -19,7 +20,9 @@ public class ChessBoardView extends GridPane {
     private static final int PIECE_RADIUS = 30;
     private final ChessGameManagerController chessGameManagerController;
     private Rectangle selectedRectangle;
-    
+    private Rectangle highlightedRectangle;
+    private Piece selectedPiece;
+
     public ChessBoardView(ChessGameManagerController chessGameController) {
         this.chessGameManagerController = chessGameController;
         createChessBoard();
@@ -65,12 +68,12 @@ public class ChessBoardView extends GridPane {
         StackPane stackPanePiece = getStackPaneForPieceCreated(colorPiece, pieceType);
         ColorPiece currentGameColor = chessGameManagerController.getCurrentGameColorPiece();
         if (currentGameColor == colorPiece) {
-            stackPanePiece.setOnMouseClicked(event -> ClickOnThePieceToMove(rectangle));
+            stackPanePiece.setOnMouseClicked(_ -> ClickOnThePieceToMove(row, column, rectangle, pieceType, colorPiece, piece));
         }
         return stackPanePiece;
     }
 
-    private void ClickOnThePieceToMove(Rectangle rectangle) {
+    private void ClickOnThePieceToMove(int row, int column, Rectangle rectangle, PieceType pieceType, ColorPiece colorPiece, Piece piece) {
         if (selectedRectangle!= null) {
             selectedRectangle.setFill(getColorForRectangle(
                     GridPane.getRowIndex(selectedRectangle),
@@ -79,6 +82,42 @@ public class ChessBoardView extends GridPane {
         }
         selectedRectangle = rectangle;
         rectangle.setFill(Color.GREEN);
+
+        if (highlightedRectangle != null) {
+            highlightedRectangle.setFill(getColorForRectangle(
+                    GridPane.getRowIndex(highlightedRectangle),
+                    GridPane.getColumnIndex(highlightedRectangle)
+            ));
+        }
+
+        for (Node node : getChildren()) {
+            if (node instanceof Rectangle nextRectangle) {
+                int rectangleRow = GridPane.getRowIndex(nextRectangle);
+                int rectangleColumn = GridPane.getColumnIndex(nextRectangle);
+
+                // Logic PAWN select
+                if (pieceType == PieceType.PAWN) {
+                    int nextRectangleRow = (colorPiece == ColorPiece.WHITE) ? rectangleRow + 1 : rectangleRow - 1;
+                    if (nextRectangleRow == row && rectangleColumn == column) {
+                        nextRectangle.setFill(Color.YELLOW);
+                        highlightedRectangle = nextRectangle;
+                        selectedPiece = piece;
+                        nextRectangle.setOnMouseClicked(_ -> MovePiece(rectangleRow, rectangleColumn, row, column));
+                    }
+                }
+            }
+        }
+    }
+
+    private void MovePiece(int nextRectangleRow, int nextRectangleColumn, int startRectangleRow, int startRectangleColumn) {
+        chessGameManagerController.movePiece(selectedPiece, nextRectangleRow, nextRectangleColumn, startRectangleRow, startRectangleColumn);
+        chessGameManagerController.changeCurrentGameColorPiece();
+        updateBoard();
+    }
+
+    private void updateBoard() {
+        getChildren().clear();
+        createChessBoard();
     }
 
     private StackPane getStackPaneForPieceCreated(ColorPiece colorPiece, PieceType pieceType) {
