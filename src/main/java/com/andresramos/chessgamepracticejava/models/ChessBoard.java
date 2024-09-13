@@ -23,8 +23,29 @@ public class ChessBoard {
         }
     }
 
-    public ColorRectangle getColor(int row, int column) {
-        return rectangles[row][column].getColorRectangle();
+    public ColorRectangle getColorRectangle(int row, int column) {
+        return getRectangle(row, column).getColorRectangle();
+    }
+
+    public Piece getPieceRectangle(int row, int column) {
+        return getRectangle(row, column).getPiece();
+    }
+
+    public void setPieceRectangle(Piece initializePiece, int row, int column) {
+        getRectangle(row, column).setPiece(initializePiece);
+    }
+
+    public Boolean hasPieceRectangle(int row, int column) {
+        return getRectangle(row, column).hasPiece();
+    }
+
+    public void removePiece(int startRectangleRow, int startRectangleColumn) {
+        getRectangle(startRectangleRow, startRectangleColumn).setPiece(null);
+    }
+
+    private Rectangle getRectangle(int row, int column) {
+        // TODO: no exist rectangle?
+        return rectangles[row][column];
     }
 
     public int sizeRow() {
@@ -33,22 +54,5 @@ public class ChessBoard {
 
     public int sizeColumn() {
         return SIZE_COLUMN;
-    }
-
-    public void setPieceRectangle(Piece initializePiece, int row, int column) {
-        System.out.println("row " + row + " column " + column + " P" + initializePiece.getPieceType());
-        rectangles[row][column].setPiece(initializePiece);
-    }
-
-    public Boolean hasPieceRectangle(int row, int column) {
-        return rectangles[row][column].hasPiece();
-    }
-
-    public Piece getPieceRectangle(int row, int column) {
-        return rectangles[row][column].getPiece();
-    }
-
-    public void removePiece(int startRectangleRow, int startRectangleColumn) {
-        rectangles[startRectangleRow][startRectangleColumn].setPiece(null);
     }
 }

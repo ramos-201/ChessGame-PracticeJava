@@ -6,12 +6,12 @@ import com.andresramos.chessgamepracticejava.utils.enums.ColorPiece;
 import com.andresramos.chessgamepracticejava.utils.enums.ColorRectangle;
 import com.andresramos.chessgamepracticejava.utils.enums.PieceType;
 
-public class ChessGameManagerController {
+public class ChessGameController {
 
     private final ChessBoard chessBoard;
     private ColorPiece currentGameColorPiece;
 
-    public ChessGameManagerController() {
+    public ChessGameController() {
         this.chessBoard = new ChessBoard();
         this.currentGameColorPiece = ColorPiece.WHITE;
         placeChessPieces();
@@ -30,14 +30,14 @@ public class ChessGameManagerController {
         };
         for (int column = 0; column < pieces.length; column++) {
             PieceType pieceType = pieces[column];
-            chessBoard.setPieceRectangle(getInitializePiece(PieceType.PAWN, ColorPiece.BLACK), 1, column);
-            chessBoard.setPieceRectangle(getInitializePiece(pieceType, ColorPiece.BLACK), 0, column);
-            chessBoard.setPieceRectangle(getInitializePiece(PieceType.PAWN, ColorPiece.WHITE), 6, column);
-            chessBoard.setPieceRectangle(getInitializePiece(pieceType, ColorPiece.WHITE), 7, column);
+            chessBoard.setPieceRectangle(createPiece(PieceType.PAWN, ColorPiece.BLACK), 1, column);
+            chessBoard.setPieceRectangle(createPiece(pieceType, ColorPiece.BLACK), 0, column);
+            chessBoard.setPieceRectangle(createPiece(PieceType.PAWN, ColorPiece.WHITE), 6, column);
+            chessBoard.setPieceRectangle(createPiece(pieceType, ColorPiece.WHITE), 7, column);
         }
     }
 
-    private static Piece getInitializePiece(PieceType pieceType, ColorPiece colorPiece) {
+    private static Piece createPiece(PieceType pieceType, ColorPiece colorPiece) {
         return switch (pieceType) {
             case PAWN -> new PawnPiece(colorPiece);
             case KNIGHT -> new KnightPiece(colorPiece);
@@ -48,7 +48,6 @@ public class ChessGameManagerController {
         };
     }
 
-
     public int sizeRowBoard() {
         return chessBoard.sizeRow();
     }
@@ -58,7 +57,7 @@ public class ChessGameManagerController {
     }
 
     public ColorRectangle getColorRectangle(int row, int column) {
-        return chessBoard.getColor(row, column);
+        return chessBoard.getColorRectangle(row, column);
     }
 
     public Boolean hasPieceRectangle(int row, int column) {
@@ -73,12 +72,12 @@ public class ChessGameManagerController {
         return currentGameColorPiece;
     }
 
+    public void changeCurrentGameColorPiece() {
+        currentGameColorPiece = currentGameColorPiece == ColorPiece.WHITE ? ColorPiece.BLACK : ColorPiece.WHITE;
+    }
+
     public void movePiece(Piece piece, int nextRectangleRow, int nextRectangleColumn, int startRectangleRow, int startRectangleColumn) {
         chessBoard.setPieceRectangle(piece, nextRectangleRow, nextRectangleColumn);
         chessBoard.removePiece(startRectangleRow, startRectangleColumn);
-    }
-
-    public void changeCurrentGameColorPiece() {
-        currentGameColorPiece = currentGameColorPiece == ColorPiece.WHITE ? ColorPiece.BLACK : ColorPiece.WHITE;
     }
 }

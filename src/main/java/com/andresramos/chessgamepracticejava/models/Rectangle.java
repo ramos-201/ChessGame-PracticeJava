@@ -16,15 +16,15 @@ public class Rectangle {
         return colorRectangle;
     }
 
+    public Piece getPiece() {
+        return piece;
+    }
+
     public void setPiece(Piece pieceValue) {
         this.piece = pieceValue;
     }
 
     public Boolean hasPiece() {
         return piece != null;
-    }
-
-    public Piece getPiece() {
-        return piece;
     }
 }
