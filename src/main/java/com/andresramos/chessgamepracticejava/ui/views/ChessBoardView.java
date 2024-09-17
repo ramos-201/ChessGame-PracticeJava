@@ -22,27 +22,32 @@ public class ChessBoardView extends GridPane {
 
     public ChessBoardView(ChessGameController chessGameController) {
         this.chessGameController = chessGameController;
-        createChessBoard();
+        initializeChessBoard();
     }
 
-    private void createChessBoard() {
+    private void initializeChessBoard() {
         final int SIZE_ROW_BOARD = chessGameController.sizeRowBoard();
         final int SIZE_COLUMN_BOARD = chessGameController.sizeColumnBoard();
 
         for (int row = 0; row < SIZE_ROW_BOARD; row++) {
             for (int column = 0; column < SIZE_COLUMN_BOARD; column++) {
-                StackPane stackPane = new StackPane();
-                Rectangle rectangle = createRectangleForChessBoard(row, column);
-                stackPane.getChildren().add(rectangle);
-
-                Boolean hasPiece = chessGameController.hasPieceRectangle(row, column);
-                if (Boolean.TRUE.equals(hasPiece)) {
-                    StackPane pieceInRect = placePieceInRectangle(row, column, rectangle);
-                    stackPane.getChildren().add(pieceInRect);
-                }
+                StackPane stackPane = createTile(row, column);
                 add(stackPane, column, row);
             }
         }
+    }
+
+    private StackPane createTile(int row, int column) {
+        StackPane stackPane = new StackPane();
+        Rectangle rectangle = createRectangleForChessBoard(row, column);
+        stackPane.getChildren().add(rectangle);
+
+        Boolean hasPiece = chessGameController.hasPieceRectangle(row, column);
+        if (Boolean.TRUE.equals(hasPiece)) {
+            StackPane pieceInRect = placePieceInRectangle(row, column, rectangle);
+            stackPane.getChildren().add(pieceInRect);
+        }
+        return stackPane;
     }
 
     private Rectangle createRectangleForChessBoard(int row, int column) {
@@ -50,6 +55,8 @@ public class ChessBoardView extends GridPane {
         Rectangle rectangle = new Rectangle(SIZE_RECTANGLE, SIZE_RECTANGLE);
         Color colorForRectangle = getColorForRectangle(row, column);
         rectangle.setFill(colorForRectangle);
+        GridPane.setRowIndex(rectangle, row);
+        GridPane.setColumnIndex(rectangle, column);
         return rectangle;
     }
 
@@ -66,6 +73,8 @@ public class ChessBoardView extends GridPane {
         ColorPiece colorPiece = piece.getColor();
         PieceType pieceType = piece.getPieceType();
         StackPane stackPanePiece = getStackPaneForPieceCreated(colorPiece, pieceType);
+        GridPane.setRowIndex(stackPanePiece, row);
+        GridPane.setColumnIndex(stackPanePiece, column);
         ColorPiece currentGameColor = chessGameController.getCurrentGameColorPiece();
         if (currentGameColor == colorPiece) {
             stackPanePiece.setOnMouseClicked(_ -> clickOnThePieceToMove(row, column, rectangle, pieceType, colorPiece, piece));
@@ -95,51 +104,75 @@ public class ChessBoardView extends GridPane {
         };
     }
 
-    // ACTIONS
     private void clickOnThePieceToMove(int row, int column, Rectangle rectangle, PieceType pieceType, ColorPiece colorPiece, Piece piece) {
         changeColorForSelectRectangle(rectangle);
         resetHighlightedRectangle(highlightedRectangle);
 
-        // Logic PAWN select
         if (pieceType == PieceType.PAWN) {
-            int nextRectangleRow = (colorPiece == ColorPiece.WHITE) ? row - 1 : row + 1;
-            Node nodeAtPositionStackPane = getChildren().stream()
-                    .filter(node -> GridPane.getRowIndex(node) == nextRectangleRow && GridPane.getColumnIndex(node) == column)
-                    .findFirst()
-                    .orElse(null);
-            // movimiento de frente
-            if (nodeAtPositionStackPane instanceof StackPane stackPane1) {
-                Boolean hasPieceNextRectangle = chessGameController.hasPieceRectangle(nextRectangleRow, column);
-                if (Boolean.FALSE.equals(hasPieceNextRectangle)) {
-                    Rectangle nextRectangle1 = (Rectangle) stackPane1.getChildren().get(0);
-                    nextRectangle1.setFill(Color.YELLOW);
-                    highlightedRectangle = nextRectangle1;
-                    stackPane1.setOnMouseClicked(_ -> movePiece(nextRectangleRow, column, row, column, piece));
+            actionForwardMovement(row, column, colorPiece, piece);
+            actionRightDiagonalMovement(colorPiece, row, column + 1, column, piece);
+            actionLeftDiagonalMovement(colorPiece, row, column - 1, column, piece);
+        }
+    }
+
+    private void actionLeftDiagonalMovement(ColorPiece colorPiece, int row, int column, int column1, Piece piece) {
+        int nextNodeRow = (colorPiece == ColorPiece.WHITE) ? row - 1 : row + 1;
+        int leftDiagonalColumn = column;
+        Node nodeAtLeftDiagonalStackPane = getChildren().stream()
+                .filter(node -> GridPane.getRowIndex(node) == nextNodeRow && GridPane.getColumnIndex(node) == leftDiagonalColumn)
+                .findFirst()
+                .orElse(null);
+        if (nodeAtLeftDiagonalStackPane instanceof StackPane stackPanePiece) {
+            Rectangle nextRectangle = (Rectangle) stackPanePiece.getChildren().getFirst();
+            Boolean hasPieceNextRectangle = chessGameController.hasPieceRectangle(nextNodeRow, leftDiagonalColumn);
+            if (Boolean.TRUE.equals(hasPieceNextRectangle)) {
+                ColorPiece nextPieceColor = chessGameController.getPieceRectangle(nextNodeRow, leftDiagonalColumn).getColor();
+                if (nextPieceColor != colorPiece) {
+                    nextRectangle.setFill(Color.YELLOW);
+                    nextRectangle.setStroke(Color.BLACK);
+                    highlightedRectangle = nextRectangle;
+                    stackPanePiece.setOnMouseClicked(_ -> movePiece(nextNodeRow, leftDiagonalColumn, row, column1, piece));
                 }
             }
+        }
+    }
 
-            int rightDiagonalColumn = column + 1;
-            Node nodeAtRightDiagonalStackPane = getChildren().stream()
-                    .filter(node -> GridPane.getRowIndex(node) == nextRectangleRow && GridPane.getColumnIndex(node) == rightDiagonalColumn)
-                    .findFirst()
-                    .orElse(null);
-            // movimiento de diagonal
-            if (nodeAtRightDiagonalStackPane instanceof StackPane stackPanePiece) {
-                Rectangle nextRectangle = (Rectangle) stackPanePiece.getChildren().get(0);
-                Boolean hasPieceNextRectangle = chessGameController.hasPieceRectangle(nextRectangleRow, rightDiagonalColumn);
+    private void actionRightDiagonalMovement(ColorPiece colorPiece, int row, int column, int column1, Piece piece) {
+        int nextNodeRow = (colorPiece == ColorPiece.WHITE) ? row - 1 : row + 1;
+        int rightDiagonalColumn = column;
+        Node nodeAtRightDiagonalStackPane = getChildren().stream()
+                .filter(node -> GridPane.getRowIndex(node) == nextNodeRow && GridPane.getColumnIndex(node) == rightDiagonalColumn)
+                .findFirst()
+                .orElse(null);
 
-                if (Boolean.TRUE.equals(hasPieceNextRectangle)) {
-                    ColorPiece nextPieceColor = chessGameController.getPieceRectangle(nextRectangleRow, rightDiagonalColumn).getColor();
-                    if (nextPieceColor != colorPiece) {
-                        nextRectangle.setFill(Color.YELLOW);
-                        nextRectangle.setStroke(Color.BLACK);
-                        highlightedRectangle = nextRectangle;
-                        stackPanePiece.setOnMouseClicked(_ -> {
-                            movePiece(nextRectangleRow, rightDiagonalColumn, row, column, piece);
-                        });
-                    }
+        if (nodeAtRightDiagonalStackPane instanceof StackPane stackPanePiece) {
+            Rectangle nextRectangle = (Rectangle) stackPanePiece.getChildren().getFirst();
+            Boolean hasPieceNextRectangle = chessGameController.hasPieceRectangle(nextNodeRow, rightDiagonalColumn);
+            if (Boolean.TRUE.equals(hasPieceNextRectangle)) {
+                ColorPiece nextPieceColor = chessGameController.getPieceRectangle(nextNodeRow, rightDiagonalColumn).getColor();
+                if (nextPieceColor != colorPiece) {
+                    nextRectangle.setFill(Color.YELLOW);
+                    nextRectangle.setStroke(Color.BLACK);
+                    highlightedRectangle = nextRectangle;
+                    stackPanePiece.setOnMouseClicked(_ -> movePiece(nextNodeRow, rightDiagonalColumn, row, column1, piece));
                 }
+            }
+        }
+    }
 
+    private void actionForwardMovement(int row, int column, ColorPiece colorPiece, Piece piece) {
+        int nextNodeRow = (colorPiece == ColorPiece.WHITE) ? row - 1 : row + 1;
+        Node nodeAtPositionStackPane = getChildren().stream()
+                .filter(node -> GridPane.getRowIndex(node) == nextNodeRow && GridPane.getColumnIndex(node) == column)
+                .findFirst()
+                .orElse(null);
+        if (nodeAtPositionStackPane instanceof StackPane stackPane1) {
+            Boolean hasPieceNextRectangle = chessGameController.hasPieceRectangle(nextNodeRow, column);
+            if (Boolean.FALSE.equals(hasPieceNextRectangle)) {
+                Rectangle nextRectangle = (Rectangle) stackPane1.getChildren().getFirst();
+                nextRectangle.setFill(Color.YELLOW);
+                highlightedRectangle = nextRectangle;
+                stackPane1.setOnMouseClicked(_ -> movePiece(nextNodeRow, column, row, column, piece));
             }
         }
     }
@@ -168,6 +201,6 @@ public class ChessBoardView extends GridPane {
 
     private void updateBoard() {
         getChildren().clear();
-        createChessBoard();
+        initializeChessBoard();
     }
 }
